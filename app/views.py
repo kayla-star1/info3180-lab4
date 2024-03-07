@@ -5,6 +5,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from app.models import UserProfile
 from app.forms import LoginForm
+from werkzeug.security import check_password_hash
 
 
 ###
@@ -51,9 +52,17 @@ def login():
         # You will need to import the appropriate function to do so.
         # Then store the result of that query to a `user` variable so it can be
         # passed to the login_user() method below.
+        username = form.username.data
+        password = form.password.data
 
+        user = UserProfile.query.filter_by(username=username).first()
+
+        if user is None or not check_password_hash(user.password, password):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
         # Gets user id, load into session
         login_user(user)
+        flash('You have been logged in.')
 
         # Remember to flash a message to the user
         return redirect(url_for("home"))  # The user should be redirected to the upload form instead
