@@ -9,7 +9,6 @@ from werkzeug.security import check_password_hash
 from app.forms import UploadForm
 from flask import send_from_directory
 
-
 ###
 # Routing for your application.
 ###
@@ -45,6 +44,7 @@ def upload():
             return render_template('upload.html', form=form)
     else:
         return render_template('upload.html', form=form)
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -137,3 +137,12 @@ def get_image(filename):
 def files():
     images = get_uploaded_images()
     return render_template('files.html', images=images)
+
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('home'))
